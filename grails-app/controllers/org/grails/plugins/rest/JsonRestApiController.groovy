@@ -29,7 +29,7 @@ class JsonRestApiController {
     def data = retrieveRecord()
     render text: data.result as JSON, contentType: 'application/json', status: data.status
   }
-  
+
   def create = {
     def result = [ success: true ]
     def status = 200
@@ -41,6 +41,7 @@ class JsonRestApiController {
       if (obj.hasErrors()) {
         status = 500
         result.message = extractErrors(obj).join(";")
+          result.errors = extractErrorsEx(obj)
         result.success = false
       } else {
         result.data = obj.save(flush: true)
@@ -52,7 +53,7 @@ class JsonRestApiController {
     }
     render text: result as JSON, contentType: 'application/json', status: status
   }
-  
+
   def update = {
     def data = retrieveRecord()
     if (data.result.success) {
@@ -61,6 +62,7 @@ class JsonRestApiController {
       if (data.result.data.hasErrors()) {
         data.status = 500
         data.result.message = extractErrors(data.result.data).join(";")
+          result.errors = extractErrorsEx(obj)
         data.result.success = false
       } else {
 	  	data.result.data = data.result.data.save(flush: true)
@@ -117,5 +119,12 @@ class JsonRestApiController {
       messageSource.getMessage(error, locale)
     }
   }
+
+    private extractErrorsEx(model) {
+      def locale = RCU.getLocale(request)
+      model.errors.fieldErrors.collect { error ->
+        [field: error.field, message: messageSource.getMessage(error, locale)]
+      }
+    }
 
 }
