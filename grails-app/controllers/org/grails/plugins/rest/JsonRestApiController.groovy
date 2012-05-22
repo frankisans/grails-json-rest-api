@@ -36,7 +36,7 @@ class JsonRestApiController {
     def entity = grailsApplication.getClassForName(params.entity)
     if (entity) {
       def obj = entity.newInstance()
-      obj.properties = request.JSON.data
+      obj.properties = request.JSON/*.data*/
       obj.validate()
       if (obj.hasErrors()) {
         status = 500
@@ -57,7 +57,7 @@ class JsonRestApiController {
   def update = {
     def data = retrieveRecord()
     if (data.result.success) {
-      data.result.data.properties = request.JSON.data
+      data.result.data.properties = request.JSON/*.data*/
       data.result.data.validate()
       if (data.result.data.hasErrors()) {
         data.status = 500
